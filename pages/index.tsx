@@ -5,6 +5,8 @@ import { deleteNodeAtPath, pathToString, serializePath } from '../lib/treeHelper
 import React from 'react';
 import { Upload } from 'lucide-react';
 import TreeExplorer from '../components/TreeExplorer';
+import Breadcrumb from '../components/Breadcumb';
+
 
 
 
@@ -20,6 +22,7 @@ export default function Home() {
   useEffect(() => {
     const loadedData = loadData();
     const loadedExpanded = loadExpandedState();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setData(loadedData);
     setExpandedNodes(loadedExpanded);
   }, []);
@@ -70,6 +73,37 @@ export default function Home() {
     setIsConfirmModalOpen(true);
   };
 
+  const handleDeleteConfirm = () => {
+    if (pathToDelete.length > 1) {
+      const newData = deleteNodeAtPath(data, pathToDelete);
+      setData(newData);
+      
+      // If deleted node was selected, select root
+      if (serializePath(selectedPath) === serializePath(pathToDelete)) {
+        setSelectedPath(['root']);
+      }
+    }
+    setIsConfirmModalOpen(false);
+    setPathToDelete([]);
+  };
+
+  const handleDeleteCancel = () => {
+    setIsConfirmModalOpen(false);
+    setPathToDelete([]);
+  };
+
+  const handleImport = (importedData: any) => {
+    setData(importedData);
+    setSelectedPath(['root']);
+    setExpandedNodes(new Set(['root']));
+    setIsImportModalOpen(false);
+  };
+
+  const handleBreadcrumbClick = (segmentPath: string[]) => {
+    setSelectedPath(segmentPath);
+  };
+
+
   return (
     <>
       <Head>
@@ -115,8 +149,21 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        
+        {/* Right: JSON Viewport */}
+            <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden flex flex-col">
+              <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                <h2 className="font-semibold text-gray-700">JSON Viewer</h2>
+              </div>
+              <div className="flex-1 overflow-auto p-4">
+                <Breadcrumb path={selectedPath} onSegmentClick={handleBreadcrumbClick} />
+                <div className="bg-gray-900 rounded-lg p-4 overflow-auto">
+                  <pre className="text-sm text-green-400 font-mono">
+                    {JSON.stringify(data, null, 2)}
+                  </pre>
+                </div>
+              </div>
+            </div>
+      
       </main>
     </>
   );
