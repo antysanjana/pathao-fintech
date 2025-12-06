@@ -4,6 +4,7 @@ import { loadData, saveData, loadExpandedState, saveExpandedState } from '../lib
 import { deleteNodeAtPath, pathToString, serializePath } from '../lib/treeHelpers';
 import React from 'react';
 import { Upload } from 'lucide-react';
+import TreeExplorer from '../components/TreeExplorer';
 
 
 
@@ -43,6 +44,32 @@ export default function Home() {
     );
   }
 
+   const handleToggle = (path: string[]) => {
+    const pathStr = serializePath(path);
+    const newExpanded = new Set(expandedNodes);
+    
+    if (newExpanded.has(pathStr)) {
+      newExpanded.delete(pathStr);
+    } else {
+      newExpanded.add(pathStr);
+    }
+    
+    setExpandedNodes(newExpanded);
+  };
+
+  const handleSelect = (path: string[]) => {
+    setSelectedPath(path);
+  };
+
+  const handleDeleteRequest = (path: string[]) => {
+    if (path.length <= 1) {
+      // Cannot delete root
+      return;
+    }
+    setPathToDelete(path);
+    setIsConfirmModalOpen(true);
+  };
+
   return (
     <>
       <Head>
@@ -67,6 +94,30 @@ export default function Home() {
             </div>
           </div>
         </header>
-        </main>
-    </>)
+         {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-6 h-[calc(100vh-140px)]">
+            {/* Left: Tree Explorer */}
+            <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden flex flex-col">
+              <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                <h2 className="font-semibold text-gray-700">Explorer</h2>
+              </div>
+              <div className="flex-1 overflow-auto">
+                <TreeExplorer
+                  data={data}
+                  selectedPath={selectedPath}
+                  expandedNodes={expandedNodes}
+                  onToggle={handleToggle}
+                  onSelect={handleSelect}
+                  onDelete={handleDeleteRequest}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+      </main>
+    </>
+  );
 }
