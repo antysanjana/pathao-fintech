@@ -1,4 +1,4 @@
-import { useState, useEffect, JSX } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { loadData, saveData, loadExpandedState, saveExpandedState } from '../lib/storage';
 import { deleteNodeAtPath, pathToString, serializePath } from '../lib/treeHelpers';
@@ -11,14 +11,13 @@ import ConfirmModal from '../components/ConfirmModal';
 
 
 
-
 export default function Home() {
-   const [data, setData] = useState<any>(null);
-  const [selectedPath, setSelectedPath] = useState<string[]>(['root']);
-  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(['root']));
+  const [data, setData] = useState(null);
+  const [selectedPath, setSelectedPath] = useState(['root']);
+  const [expandedNodes, setExpandedNodes] = useState(new Set(['root']));
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [pathToDelete, setPathToDelete] = useState<string[]>([]);
+  const [pathToDelete, setPathToDelete] = useState([]);
 
   // Load data on mount
   useEffect(() => {
@@ -49,24 +48,24 @@ export default function Home() {
     );
   }
 
-   const handleToggle = (path: string[]) => {
+  const handleToggle = (path) => {
     const pathStr = serializePath(path);
     const newExpanded = new Set(expandedNodes);
-    
+
     if (newExpanded.has(pathStr)) {
       newExpanded.delete(pathStr);
     } else {
       newExpanded.add(pathStr);
     }
-    
+
     setExpandedNodes(newExpanded);
   };
 
-  const handleSelect = (path: string[]) => {
+  const handleSelect = (path) => {
     setSelectedPath(path);
   };
 
-  const handleDeleteRequest = (path: string[]) => {
+  const handleDeleteRequest = (path) => {
     if (path.length <= 1) {
       // Cannot delete root
       return;
@@ -79,7 +78,7 @@ export default function Home() {
     if (pathToDelete.length > 1) {
       const newData = deleteNodeAtPath(data, pathToDelete);
       setData(newData);
-      
+
       // If deleted node was selected, select root
       if (serializePath(selectedPath) === serializePath(pathToDelete)) {
         setSelectedPath(['root']);
@@ -94,14 +93,14 @@ export default function Home() {
     setPathToDelete([]);
   };
 
-  const handleImport = (importedData: any) => {
+  const handleImport = (importedData) => {
     setData(importedData);
     setSelectedPath(['root']);
     setExpandedNodes(new Set(['root']));
     setIsImportModalOpen(false);
   };
 
-  const handleBreadcrumbClick = (segmentPath: string[]) => {
+  const handleBreadcrumbClick = (segmentPath) => {
     setSelectedPath(segmentPath);
   };
 
