@@ -6,6 +6,8 @@ import React from 'react';
 import { Upload } from 'lucide-react';
 import TreeExplorer from '../components/TreeExplorer';
 import Breadcrumb from '../components/Breadcumb';
+import ImportModal from '../components/ImportModal';
+import ConfirmModal from '../components/ConfirmModal';
 
 
 
@@ -163,7 +165,20 @@ export default function Home() {
                 </div>
               </div>
             </div>
-      
+      {/* Modals */}
+        <ImportModal
+          isOpen={isImportModalOpen}
+          onImport={handleImport}
+          onCancel={() => setIsImportModalOpen(false)}
+        />
+
+        <ConfirmModal
+          isOpen={isConfirmModalOpen}
+          title="Confirm Delete"
+          message={`Are you sure you want to delete this node?\n\nPath: ${pathToString(pathToDelete)}`}
+          onConfirm={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
+        />
       </main>
     </>
   );
